@@ -1,0 +1,132 @@
+[
+  {
+    "model": "listings.listing",
+    "pk": 1,
+    "fields": {
+      "title": "Asus Tuf Gaming FX505DD",
+      "description": "Gaming laptop, Ryzen 5, GTX 1050. Good condition.",
+      "price": "4000.00",
+      "category": "electronics",
+      "latitude": 35.7720,
+      "longitude": -5.8050,
+      "created_at": "2026-06-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "listings.listing",
+    "pk": 2,
+    "fields": {
+      "title": "Asus Gaming I9",
+      "description": "High-end Asus laptop, Intel i9, RTX graphics.",
+      "price": "8700.00",
+      "category": "electronics",
+      "latitude": 35.7680,
+      "longitude": -5.8200,
+      "created_at": "2026-06-02T11:30:00Z"
+    }
+  },
+  {
+    "model": "listings.listing",
+    "pk": 3,
+    "fields": {
+      "title": "Msi cyborg i7 13th RTX 4060",
+      "description": "MSI Cyborg, i7 13th gen, RTX 4060. Almost new.",
+      "price": "7900.00",
+      "category": "electronics",
+      "latitude": 35.2100,
+      "longitude": -6.1500,
+      "created_at": "2026-06-03T09:15:00Z"
+    }
+  },
+  {
+    "model": "listings.listing",
+    "pk": 4,
+    "fields": {
+      "title": "Laptops GAMING. Pc portable",
+      "description": "Several gaming laptops available. Various models.",
+      "price": "4500.00",
+      "category": "electronics",
+      "latitude": 35.7610,
+      "longitude": -5.8290,
+      "created_at": "2026-06-04T14:45:00Z"
+    }
+  },
+  {
+    "model": "listings.listing",
+    "pk": 5,
+    "fields": {
+      "title": "Victus Gaming Laptop",
+      "description": "HP Victus, RTX 3050, 16GB RAM.",
+      "price": "6200.00",
+      "category": "electronics",
+      "latitude": 35.7850,
+      "longitude": -5.8100,
+      "created_at": "2026-06-04T16:00:00Z"
+    }
+  },
+  {
+    "model": "listings.listing",
+    "pk": 6,
+    "fields": {
+      "title": "Lenovo Legion 5",
+      "description": "Lenovo Legion 5, Ryzen 7, RTX 3060.",
+      "price": "7300.00",
+      "category": "electronics",
+      "latitude": 35.7500,
+      "longitude": -5.8400,
+      "created_at": "2026-06-05T08:20:00Z"
+    }
+  },
+  {
+    "model": "listings.listing",
+    "pk": 7,
+    "fields": {
+      "title": "iPhone 13",
+      "description": "iPhone 13, 128GB, battery health 91%.",
+      "price": "6500.00",
+      "category": "electronics",
+      "latitude": 35.7800,
+      "longitude": -5.8120,
+      "created_at": "2026-06-05T18:00:00Z"
+    }
+  },
+  {
+    "model": "listings.listing",
+    "pk": 8,
+    "fields": {
+      "title": "Sofa 3 places",
+      "description": "Comfortable 3-seat sofa, grey fabric.",
+      "price": "1500.00",
+      "category": "furniture",
+      "latitude": 35.7700,
+      "longitude": -5.8200,
+      "created_at": "2026-06-05T19:00:00Z"
+    }
+  },
+  {
+    "model": "listings.listing",
+    "pk": 9,
+    "fields": {
+      "title": "VTT Mountain Bike",
+      "description": "Mountain bike, 21 speeds, good tires.",
+      "price": "1800.00",
+      "category": "sports",
+      "latitude": 35.7950,
+      "longitude": -5.7980,
+      "created_at": "2026-06-05T20:30:00Z"
+    }
+  },
+  {
+    "model": "listings.listing",
+    "pk": 10,
+    "fields": {
+      "title": "Dell XPS 15 (Casablanca)",
+      "description": "Dell XPS 15, located far from Tangier (for radius testing).",
+      "price": "9000.00",
+      "category": "electronics",
+      "latitude": 35.5731,
+      "longitude": -5.5898,
+      "created_at": "2026-06-05T21:00:00Z"
+    }
+  }
+]
