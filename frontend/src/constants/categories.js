@@ -1,11 +1,3 @@
-// Listing categories used by the map markers.
-//
-// Adapted from the teammate's map module (feat/map-ui-integration) to draw
-// colors from our single source of truth (`theme.js`) instead of a separate
-// palette. Each category maps to a marker color + emoji. Listings that have
-// no category (our current backend does not store one yet) fall back to
-// `other`, so the map degrades gracefully.
-
 import { colors } from "../theme";
 
 const categories = {

@@ -1,15 +1,3 @@
-// NearbyListingsScreen — renders the results returned by the backend.
-//
-// Layout:
-//   [ NavBar with logo ]                 ← brand bar (left: back, right: Filters)
-//   [ location + radius summary row ]
-//   [ MapFilter panel ]  (collapsible)   ← map to change location / radius
-//   [ 2-column grid of listings ]
-//
-// Tapping "Filters" reveals the map filter under the logo; applying it updates
-// the search center/radius and re-runs the query. Receives the initial
-// { latitude, longitude, radius } and an onBack handler.
-
 import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -26,17 +14,14 @@ import ListingCard from "../components/ListingCard";
 import MapFilter from "../components/MapFilter";
 import NavBar from "../components/NavBar";
 import MapScreen from "./MapScreen";
-import { fetchNearbyListings } from "../services/api";
-import { reverseGeocode } from "../services/locationService";
+import { getNearbyListings } from "../services/api";
+import { getCityName } from "../services/locationService";
 import { colors, radius as r, spacing } from "../theme";
 
-// Demo area where the sample listings live (Tangier). Used as a fallback so
-// products are always shown even when the user's real GPS location has none.
 const DEMO_LOCATION = { latitude: 35.76, longitude: -5.83 };
 const FALLBACK_RADIUS_KM = 100;
 
 export default function NearbyListingsScreen({ params, onBack }) {
-  // Active search params live in state so the in-screen filter can update them.
   const [search, setSearch] = useState({
     latitude: params?.latitude ?? null,
     longitude: params?.longitude ?? null,
@@ -59,23 +44,20 @@ export default function NearbyListingsScreen({ params, onBack }) {
       let lng = search.longitude;
       let fallback = false;
 
-      // No location set? Start from the demo area.
       if (lat == null || lng == null) {
         lat = DEMO_LOCATION.latitude;
         lng = DEMO_LOCATION.longitude;
         fallback = true;
       }
 
-      let data = await fetchNearbyListings({
+      let data = await getNearbyListings({
         latitude: lat,
         longitude: lng,
         radius: fallback ? FALLBACK_RADIUS_KM : search.radius,
       });
 
-      // Real location returned nothing nearby -> fall back to the demo area
-      // so the user always sees products.
       if ((!data || data.length === 0) && !fallback) {
-        data = await fetchNearbyListings({
+        data = await getNearbyListings({
           latitude: DEMO_LOCATION.latitude,
           longitude: DEMO_LOCATION.longitude,
           radius: FALLBACK_RADIUS_KM,
@@ -86,9 +68,8 @@ export default function NearbyListingsScreen({ params, onBack }) {
       setListings(data || []);
       setUsedFallback(fallback);
 
-      // Resolve a friendly label for the (real) search center.
       if (search.latitude != null && search.longitude != null) {
-        const label = await reverseGeocode(search.latitude, search.longitude);
+        const label = await getCityName(search.latitude, search.longitude);
         setLocationLabel(label);
       } else {
         setLocationLabel(null);
@@ -132,14 +113,12 @@ export default function NearbyListingsScreen({ params, onBack }) {
         }}
       />
 
-      {/* Location + radius summary under the logo. */}
       <View style={styles.summaryRow}>
         <Text style={styles.summaryText} numberOfLines={1}>
           📍 {headerLabel} · {search.radius} km
         </Text>
       </View>
 
-      {/* Collapsible map filter, directly under the logo/summary. */}
       {showFilter && (
         <MapFilter
           initialCenter={
@@ -200,7 +179,6 @@ export default function NearbyListingsScreen({ params, onBack }) {
         />
       )}
 
-      {/* Full-screen map opened from the filter preview. */}
       <Modal
         visible={mapModalVisible}
         animationType="slide"

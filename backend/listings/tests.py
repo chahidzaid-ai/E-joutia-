@@ -2,16 +2,15 @@ from django.test import TestCase
 from django.urls import reverse
 
 from .models import Listing
-from .utils import haversine_km
+from .utils import distance_km
 
 
 class HaversineTests(TestCase):
     def test_same_point_is_zero(self):
-        self.assertEqual(haversine_km(35.76, -5.83, 35.76, -5.83), 0.0)
+        self.assertEqual(distance_km(35.76, -5.83, 35.76, -5.83), 0.0)
 
     def test_known_distance_rounded(self):
-        # ~1.3 km apart near Tangier.
-        d = haversine_km(35.76, -5.83, 35.78, -5.81)
+        d = distance_km(35.76, -5.83, 35.78, -5.81)
         self.assertGreater(d, 0)
         self.assertEqual(round(d, 1), d)
 

@@ -1,11 +1,3 @@
-// QuickPreviewModal — a draggable bottom sheet shown when a map marker is
-// tapped. Ported from the teammate's map module and adapted to our theme and
-// data shape:
-//   - image source uses `listing.image` (our backend) and falls back to
-//     `listing.photo` (the teammate's backend field) so it works with both.
-//   - price formatting matches ListingCard ("8,700 DH"); currency defaults
-//     to "DH".
-
 import React, { useEffect, useRef } from "react";
 import {
   Animated,

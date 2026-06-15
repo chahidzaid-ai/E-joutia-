@@ -4,19 +4,13 @@ from .models import Listing
 
 
 class ListingSerializer(serializers.ModelSerializer):
-    """Serializes a listing and exposes a computed `distance` field.
-
-    `distance` is not stored on the model; it is attached at runtime by the
-    nearby-listings view (in km, relative to the requesting user).
-    """
-
     distance = serializers.FloatField(read_only=True)
     image = serializers.SerializerMethodField()
 
     class Meta:
         model = Listing
         fields = [
-             "id",
+            "id",
             "title",
             "description",
             "price",
@@ -29,7 +23,6 @@ class ListingSerializer(serializers.ModelSerializer):
         ]
 
     def get_image(self, obj):
-        """Return an image URL for uploads or externally hosted sample images."""
         if not obj.image:
             return None
         if obj.image.name.startswith(("http://", "https://")):

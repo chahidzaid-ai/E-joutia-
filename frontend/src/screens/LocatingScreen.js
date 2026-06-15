@@ -1,15 +1,3 @@
-// LocatingScreen — shown right after the user taps "Go to Marketplace".
-//
-// Flow:
-//   • Quick silent check (no prompt): is permission granted AND device GPS on?
-//       – YES → go straight to "locating" (spin, wait for a fix) → items list.
-//       – NO  → show the "Location is off" CHOICE page where the user picks:
-//                 ▸ "Use my GPS"        → ask permission once / locate
-//                 ▸ "Choose on the map" → hand off to the map (onChooseOnMap)
-//
-//   We never spam the OS permission dialog: we only prompt when the user taps
-//   "Use my GPS", and only if the OS still allows asking (canAskAgain).
-
 import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -24,11 +12,11 @@ import {
 import NavBar from "../components/NavBar";
 import {
   PermissionStatus,
-  getCurrentLocation,
-  getLocationPermissionStatus,
-  isLocationServicesEnabled,
-  requestEnableLocationServices,
-  requestLocationPermission,
+  getCoords,
+  checkPermission,
+  gpsEnabled,
+  enableGps,
+  askPermission,
 } from "../services/locationService";
 import { colors, radius as r, spacing } from "../theme";
 
@@ -38,25 +26,23 @@ const RETRY_DELAY_MS = 2000;
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default function LocatingScreen({ onLocated, onChooseOnMap }) {
-  const [phase, setPhase] = useState("checking"); // "checking" | "choice" | "locating"
+  const [phase, setPhase] = useState("checking");
   const [message, setMessage] = useState("Getting your location…");
-  const [note, setNote] = useState(null); // hint shown on the choice page
+  const [note, setNote] = useState(null);
   const [canAskAgain, setCanAskAgain] = useState(true);
 
   const cancelledRef = useRef(false);
   const runningRef = useRef(false);
-  // Keep the latest callbacks without re-triggering the mount effect.
   const onLocatedRef = useRef(onLocated);
   const onChooseOnMapRef = useRef(onChooseOnMap);
   onLocatedRef.current = onLocated;
   onChooseOnMapRef.current = onChooseOnMap;
 
-  // Spin and wait for a real coordinate, retrying internally a few times.
   const startLocating = async () => {
     setPhase("locating");
     setMessage("Getting your location…");
     for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-      const coords = await getCurrentLocation();
+      const coords = await getCoords();
       if (cancelledRef.current) return;
 
       if (coords.success) {
@@ -76,21 +62,19 @@ export default function LocatingScreen({ onLocated, onChooseOnMap }) {
       if (cancelledRef.current) return;
     }
 
-    // Couldn't get a fix — back to the choice page.
     setNote("We couldn't get your location. Try again, or choose on the map.");
     setCanAskAgain(true);
     setPhase("choice");
   };
 
-  // Initial silent check on mount: can we locate without bothering the user?
   const initialCheck = async () => {
     if (runningRef.current) return;
     runningRef.current = true;
     try {
       setPhase("checking");
       const [servicesOn, perm] = await Promise.all([
-        isLocationServicesEnabled(),
-        getLocationPermissionStatus(),
+        gpsEnabled(),
+        checkPermission(),
       ]);
       if (cancelledRef.current) return;
 
@@ -106,18 +90,17 @@ export default function LocatingScreen({ onLocated, onChooseOnMap }) {
     }
   };
 
-  // User explicitly chose GPS on the choice page.
   const chooseGps = async () => {
     if (runningRef.current) return;
     runningRef.current = true;
     try {
       setPhase("checking");
 
-      let perm = await getLocationPermissionStatus();
+      let perm = await checkPermission();
       if (cancelledRef.current) return;
 
       if (perm.status !== PermissionStatus.GRANTED && perm.canAskAgain) {
-        perm = await requestLocationPermission();
+        perm = await askPermission();
         if (cancelledRef.current) return;
       }
 
@@ -132,12 +115,11 @@ export default function LocatingScreen({ onLocated, onChooseOnMap }) {
         return;
       }
 
-      const servicesOn = await isLocationServicesEnabled();
+      const servicesOn = await gpsEnabled();
       if (cancelledRef.current) return;
       if (!servicesOn) {
-        // Ask the OS to turn GPS on (native dialog on Android).
         setPhase("checking");
-        const enabled = await requestEnableLocationServices();
+        const enabled = await enableGps();
         if (cancelledRef.current) return;
         if (!enabled) {
           setNote("Your device GPS is turned off. Turn it on, or choose on the map.");
@@ -161,7 +143,6 @@ export default function LocatingScreen({ onLocated, onChooseOnMap }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ----- Rendering -----
   if (phase === "checking" || phase === "locating") {
     return (
       <SafeAreaView style={styles.safe}>
@@ -177,7 +158,6 @@ export default function LocatingScreen({ onLocated, onChooseOnMap }) {
     );
   }
 
-  // phase === "choice"  → "Location is off" decision page.
   return (
     <SafeAreaView style={styles.safe}>
       <NavBar />

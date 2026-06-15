@@ -1,14 +1,3 @@
-// NavBar — top application bar showing the e-Joutia logo (left-aligned).
-//
-// Reused across the Home, Locating and Listings screens so the brand is always
-// visible at the top-left. Supports optional left/right action buttons
-// (e.g. a back chevron on the left, a "Filters" toggle on the right).
-//
-//   <NavBar
-//     left={{ label: "‹", big: true, onPress: goBack }}
-//     right={{ label: "Filters", onPress: toggleFilters, active: showFilters }}
-//   />
-
 import React from "react";
 import {
   Image,
@@ -22,12 +11,9 @@ import {
 
 import { colors, spacing } from "../theme";
 
-// Extra top padding so content clears the Android status bar (Wi-Fi, battery,
-// clock, etc.). iOS handles this via SafeAreaView, so we only pad on Android.
 const STATUS_BAR_PAD =
   Platform.OS === "android" ? StatusBar.currentHeight || 0 : 0;
 
-// Horizontal wordmark logo used inside the app.
 const LOGO = require("../../assets/ejotiya2.png");
 
 function Action({ action, side }) {
@@ -57,7 +43,6 @@ export default function NavBar({ left = null, right = null }) {
     <View style={styles.bar}>
       <Action action={left} side="left" />
       <Image source={LOGO} style={styles.logo} resizeMode="contain" />
-      {/* Spacer pushes any right action to the far edge, keeping the logo left. */}
       <View style={styles.spacer} />
       <Action action={right} side="right" />
     </View>
@@ -77,7 +62,7 @@ const styles = StyleSheet.create({
   },
   logo: {
     height: 38,
-    width: 120, // ~3:1 wordmark; contain keeps the aspect ratio
+    width: 120,
     marginLeft: spacing.xs,
   },
   spacer: {

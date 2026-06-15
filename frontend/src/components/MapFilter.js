@@ -1,11 +1,3 @@
-// MapFilter — compact map-based filter shown under the navbar on the items
-// screen.
-//
-// The map here is a PREVIEW: tapping it opens the full-screen map (onExpand)
-// where the user can precisely move the location, change the radius, or switch
-// to the "All listings" view. A quick radius slider + "Apply" are kept here for
-// fast tweaks without leaving the list.
-
 import React, { useState } from "react";
 import {
   StyleSheet,
@@ -18,7 +10,7 @@ import Slider from "@react-native-community/slider";
 
 import { colors, radius as r, spacing } from "../theme";
 
-const DEFAULT_CENTER = { latitude: 35.7595, longitude: -5.834 }; // Tangier
+const DEFAULT_CENTER = { latitude: 35.7595, longitude: -5.834 };
 const MIN_RADIUS_KM = 1;
 const MAX_RADIUS_KM = 50;
 
@@ -49,7 +41,6 @@ export default function MapFilter({
   return (
     <View style={styles.container}>
       <View style={styles.mapWrap}>
-        {/* Non-interactive preview — the overlay below captures the tap. */}
         <MapView
           style={styles.map}
           region={region}
@@ -71,7 +62,6 @@ export default function MapFilter({
           <Marker coordinate={center} pinColor={colors.primary} />
         </MapView>
 
-        {/* Tap anywhere on the preview to open the full-screen map. */}
         <TouchableOpacity
           style={styles.tapOverlay}
           activeOpacity={0.8}

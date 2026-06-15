@@ -1,7 +1,3 @@
-// ListingCard: a single product tile for the 2-column nearby grid.
-// Mirrors the Facebook Marketplace look: image, "Nearby" badge, price,
-// title, and distance/location line.
-
 import React from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 
@@ -12,7 +8,6 @@ const PLACEHOLDER = "https://via.placeholder.com/300x300.png?text=No+Image";
 function formatPrice(price) {
   const numeric = Number(price);
   if (!numeric || numeric <= 0) return "Free";
-  // Group thousands: 8700 -> "8,700"
   return `${numeric.toLocaleString("en-US")} DH`;
 }
 

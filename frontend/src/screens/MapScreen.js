@@ -1,19 +1,3 @@
-// MapScreen — full-screen interactive map with two distinct modes.
-//
-//   ┌─────────────────────────────────────────────────────────────┐
-//   │  ‹      [ Adjust area | All listings ]            (count)     │
-//   │                                                              │
-//   │                      M A P                                   │
-//   │                                                              │
-//   │  ADJUST AREA mode:  draggable pin + radius circle + slider   │
-//   │                     + "Search this area" (returns the area). │
-//   │  ALL LISTINGS mode: every listing shown as a marker, with no │
-//   │                     pin/circle — purely for browsing where   │
-//   │                     things are. Separate from picking area.  │
-//   └─────────────────────────────────────────────────────────────┘
-//
-// "Adjust area" hands { latitude, longitude, radius } back via onConfirm.
-
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -27,22 +11,14 @@ import Slider from "@react-native-community/slider";
 
 import ListingMarker from "../components/ListingMarker";
 import QuickPreviewModal from "../components/QuickPreviewModal";
-import { fetchNearbyListings } from "../services/api";
-import {
-  PermissionStatus,
-  ensureLocation,
-} from "../services/locationService";
+import { getNearbyListings } from "../services/api";
+import { PermissionStatus, getLocation } from "../services/locationService";
 import { colors, radius as r, spacing } from "../theme";
 
-// Fallback center (Tangier) used when we open the map without a GPS fix.
 const DEFAULT_CENTER = { latitude: 35.7595, longitude: -5.834 };
-
 const MIN_RADIUS_KM = 1;
 const MAX_RADIUS_KM = 50;
-
-// Radius (km) large enough to cover every listing for the "All listings" mode.
 const ALL_RADIUS_KM = 20000;
-
 const FETCH_DEBOUNCE_MS = 400;
 
 function deltaForRadius(radiusKm) {
@@ -56,12 +32,12 @@ export default function MapScreen({
   onConfirm,
   onBack,
 }) {
-  const [mode, setMode] = useState("area"); // "area" | "all"
+  const [mode, setMode] = useState("area");
   const [center, setCenter] = useState(initialLocation || DEFAULT_CENTER);
   const [searchRadius, setSearchRadius] = useState(initialRadius);
 
-  const [listings, setListings] = useState([]); // within radius (area mode)
-  const [allListings, setAllListings] = useState([]); // everything (all mode)
+  const [listings, setListings] = useState([]);
+  const [allListings, setAllListings] = useState([]);
   const [loadingListings, setLoadingListings] = useState(false);
   const [locating, setLocating] = useState(false);
 
@@ -79,12 +55,11 @@ export default function MapScreen({
     longitudeDelta: deltaForRadius(searchRadius),
   };
 
-  // ---- Area-mode: live listings within the radius (debounced) ----
   const loadListings = useCallback(async (lat, lng, rad) => {
     const requestId = ++requestIdRef.current;
     setLoadingListings(true);
     try {
-      const data = await fetchNearbyListings({ latitude: lat, longitude: lng, radius: rad });
+      const data = await getNearbyListings({ latitude: lat, longitude: lng, radius: rad });
       if (requestId === requestIdRef.current) {
         setListings(Array.isArray(data) ? data : []);
       }
@@ -106,11 +81,10 @@ export default function MapScreen({
     };
   }, [mode, center.latitude, center.longitude, searchRadius, loadListings]);
 
-  // ---- All-mode: fetch every listing once when entering the mode ----
   const loadAllListings = useCallback(async () => {
     setLoadingListings(true);
     try {
-      const data = await fetchNearbyListings({
+      const data = await getNearbyListings({
         latitude: center.latitude,
         longitude: center.longitude,
         radius: ALL_RADIUS_KM,
@@ -121,7 +95,6 @@ export default function MapScreen({
     } finally {
       setLoadingListings(false);
     }
-    // center is intentionally read at call time; we only refetch on mode switch.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -129,7 +102,6 @@ export default function MapScreen({
     if (mode === "all") loadAllListings();
   }, [mode, loadAllListings]);
 
-  // ---- Interactions ----
   const moveCenter = useCallback((coordinate, recenterMap = false) => {
     setCenter(coordinate);
     setModalVisible(false);
@@ -148,13 +120,12 @@ export default function MapScreen({
   }, [searchRadius]);
 
   const handleMapPress = (event) => {
-    // Tapping the map only repositions the search center in "area" mode.
     if (mode === "area") moveCenter(event.nativeEvent.coordinate);
   };
 
   const handleUseGps = async () => {
     setLocating(true);
-    const result = await ensureLocation();
+    const result = await getLocation();
     setLocating(false);
     if (result.status === PermissionStatus.GRANTED) {
       moveCenter({ latitude: result.latitude, longitude: result.longitude }, true);
@@ -193,7 +164,6 @@ export default function MapScreen({
         showsUserLocation
         showsMyLocationButton={false}
       >
-        {/* Area mode only: search circle + draggable center pin. */}
         {isArea && searchRadius > 0 && (
           <Circle
             center={center}
@@ -214,7 +184,6 @@ export default function MapScreen({
           />
         )}
 
-        {/* Listing markers (within radius in area mode; everything in all mode). */}
         {markers.map((listing) => (
           <ListingMarker
             key={String(listing.id)}
@@ -225,7 +194,6 @@ export default function MapScreen({
         ))}
       </MapView>
 
-      {/* Top bar: back + mode toggle + live count. */}
       <View style={styles.topBar} pointerEvents="box-none">
         <TouchableOpacity style={styles.iconButton} onPress={onBack} hitSlop={10}>
           <Text style={styles.iconButtonText}>‹</Text>
@@ -251,7 +219,6 @@ export default function MapScreen({
         </View>
       </View>
 
-      {/* Count badge. */}
       <View style={styles.countBadge}>
         {loadingListings ? (
           <ActivityIndicator size="small" color={colors.white} />
@@ -264,7 +231,6 @@ export default function MapScreen({
         )}
       </View>
 
-      {/* GPS / locate button — only relevant when adjusting the area. */}
       {isArea && (
         <TouchableOpacity style={styles.gpsButton} onPress={handleUseGps} disabled={locating}>
           {locating ? (
@@ -275,7 +241,6 @@ export default function MapScreen({
         </TouchableOpacity>
       )}
 
-      {/* Bottom sheet: area mode = radius + confirm; all mode = info note. */}
       {isArea ? (
         <View style={styles.sheet}>
           <Text style={styles.hint}>

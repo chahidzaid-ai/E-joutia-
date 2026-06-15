@@ -1,9 +1,7 @@
 from django.db import models
 
-class Listing(models.Model):
-    """A marketplace product listing with a geographic location."""
 
-    # Keys MUST match frontend src/constants/categories.js
+class Listing(models.Model):
     CATEGORY_CHOICES = [
         ("electronics", "Electronics"),
         ("vehicles", "Vehicles"),
@@ -24,7 +22,6 @@ class Listing(models.Model):
         choices=CATEGORY_CHOICES,
         default="other",
     )
-    # `image` is optional so listings can be seeded without an uploaded file.
     image = models.ImageField(upload_to="listings/", blank=True, null=True)
     latitude = models.FloatField()
     longitude = models.FloatField()

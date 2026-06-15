@@ -1,14 +1,3 @@
-// LocationSetupScreen — "Find items near you"
-//
-// Flow:
-//   1. On mount, request GPS permission and current coordinates.
-//   2. Show the current location (city or coordinates) + GPS status.
-//   3. Let the user choose a search radius (1/5/10/20/50 km).
-//   4. "View Nearby Listings" passes { latitude, longitude, radius } onward.
-//
-// Permission-denied state shows a friendly Facebook-style message with
-// Retry and "Continue without location" actions.
-
 import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -20,28 +9,24 @@ import {
 } from "react-native";
 
 import RadiusSelector from "../components/RadiusSelector";
-import {
-  PermissionStatus,
-  ensureLocation,
-  reverseGeocode,
-} from "../services/locationService";
+import { PermissionStatus, getLocation, getCityName } from "../services/locationService";
 import { colors, radius as r, spacing } from "../theme";
 
 export default function LocationSetupScreen({ onViewListings, onChooseOnMap }) {
   const [loading, setLoading] = useState(true);
-  const [permission, setPermission] = useState(null); // PermissionStatus
-  const [coords, setCoords] = useState(null); // { latitude, longitude }
+  const [permission, setPermission] = useState(null);
+  const [coords, setCoords] = useState(null);
   const [city, setCity] = useState(null);
   const [searchRadius, setSearchRadius] = useState(10);
 
   const init = useCallback(async () => {
     setLoading(true);
     setCity(null);
-    const result = await ensureLocation();
+    const result = await getLocation();
     setPermission(result.status);
     if (result.status === PermissionStatus.GRANTED) {
       setCoords({ latitude: result.latitude, longitude: result.longitude });
-      const label = await reverseGeocode(result.latitude, result.longitude);
+      const label = await getCityName(result.latitude, result.longitude);
       setCity(label);
     } else {
       setCoords(null);
@@ -55,7 +40,6 @@ export default function LocationSetupScreen({ onViewListings, onChooseOnMap }) {
 
   const granted = permission === PermissionStatus.GRANTED && coords;
 
-  // ----- Loading -----
   if (loading) {
     return (
       <SafeAreaView style={[styles.safe, styles.centered]}>
@@ -65,7 +49,6 @@ export default function LocationSetupScreen({ onViewListings, onChooseOnMap }) {
     );
   }
 
-  // ----- Permission denied / error -----
   if (!granted) {
     return (
       <SafeAreaView style={[styles.safe, styles.centered]}>
@@ -103,7 +86,6 @@ export default function LocationSetupScreen({ onViewListings, onChooseOnMap }) {
     );
   }
 
-  // ----- Granted -----
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.content}>
@@ -112,7 +94,6 @@ export default function LocationSetupScreen({ onViewListings, onChooseOnMap }) {
           Choose how far you'd like to search for products.
         </Text>
 
-        {/* Current location card */}
         <View style={styles.locationCard}>
           <View style={styles.locationRow}>
             <Text style={styles.pin}>📍</Text>
@@ -138,11 +119,9 @@ export default function LocationSetupScreen({ onViewListings, onChooseOnMap }) {
           )}
         </View>
 
-        {/* Radius selector */}
         <RadiusSelector value={searchRadius} onChange={setSearchRadius} />
       </View>
 
-      {/* Primary CTA */}
       <View style={styles.footer}>
         <TouchableOpacity
           style={styles.primaryButton}
@@ -280,7 +259,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "600",
   },
-  // Denied state
   deniedCard: {
     alignItems: "center",
   },

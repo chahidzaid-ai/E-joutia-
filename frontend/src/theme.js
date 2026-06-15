@@ -1,6 +1,5 @@
-// Facebook Marketplace–inspired palette and spacing tokens.
 export const colors = {
-  primary: "#1877F2", // Facebook blue
+  primary: "#1877F2",
   primaryDark: "#0B5FCC",
   background: "#FFFFFF",
   surface: "#F0F2F5",
@@ -15,11 +14,9 @@ export const colors = {
   black: "#000000",
   overlay: "rgba(0,0,0,0.5)",
 
-  // Light-blue search-area circle drawn on the map (semi-transparent).
   searchCircleStroke: "rgba(24,119,242,0.6)",
   searchCircleFill: "rgba(86,170,255,0.20)",
 
-  // Category marker colors (shared with the map's ListingMarker).
   markers: {
     electronics: "#2196F3",
     vehicles: "#4CAF50",
@@ -33,7 +30,6 @@ export const colors = {
   },
 };
 
-// Accent color reused by the map (selected marker border, etc.).
 export const accent = "#FF6F00";
 
 export const spacing = {

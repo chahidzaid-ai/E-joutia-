@@ -1,9 +1,3 @@
-// ListingMarker — a category-colored map pin for a listing.
-//
-// Ported from the teammate's map module and adapted to our color system
-// (theme.js) and data shape. Tolerant of listings with no `category`
-// (falls back to the neutral "other" marker).
-
 import React, { useEffect, useRef, useState } from "react";
 import { Animated, StyleSheet, Text, View } from "react-native";
 import { Marker } from "react-native-maps";
@@ -12,12 +6,7 @@ import categories from "../constants/categories";
 import { accent, colors } from "../theme";
 
 export default function ListingMarker({ listing, onPress, isSelected = false }) {
-  // Start visible (scale 1). Starting at 0 + tracksViewChanges=false made the
-  // native map snapshot an invisible pin and never redraw it.
   const scaleAnim = useRef(new Animated.Value(1)).current;
-
-  // Keep redrawing the native marker until the custom view has painted,
-  // then stop tracking for performance.
   const [tracksViewChanges, setTracksViewChanges] = useState(true);
 
   useEffect(() => {
@@ -26,10 +15,9 @@ export default function ListingMarker({ listing, onPress, isSelected = false }) 
       toValue: isSelected ? 1.3 : 1,
       friction: 5,
       tension: 80,
-      useNativeDriver: false, // must be false so the native snapshot sees the change
+      useNativeDriver: false,
     }).start();
 
-    // Give the view a moment to render/animate, then freeze the snapshot.
     const timer = setTimeout(() => setTracksViewChanges(false), 600);
     return () => clearTimeout(timer);
   }, [scaleAnim, isSelected]);

@@ -1,13 +1,3 @@
-// HomeScreen — post-login landing page.
-//
-// Shows the e-Joutia brand bar and a single primary call to action.
-// IMPORTANT: we do NOT request GPS permission here. Location is only requested
-// once the user taps "Go to Marketplace" (handled by the parent via
-// onEnterMarketplace), so the permission prompt is tied to an explicit action.
-//
-// NOTE: there is no authentication layer yet, so this screen also serves as the
-// "logged-in home". When auth is added, render it after a successful login.
-
 import React from "react";
 import {
   SafeAreaView,

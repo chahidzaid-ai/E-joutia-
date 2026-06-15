@@ -1,9 +1,3 @@
-// RadiusSelector: a slider that snaps to the supported search radii.
-//
-// Supported values: 1, 5, 10, 20, 50 km. The slider moves over discrete
-// steps (indices) and maps each step to a km value, so users can only pick
-// the allowed distances.
-
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Slider from "@react-native-community/slider";
@@ -13,7 +7,6 @@ import { colors, spacing } from "../theme";
 export const RADIUS_OPTIONS = [1, 5, 10, 20, 50];
 
 export default function RadiusSelector({ value, onChange }) {
-  // Resolve the current index from the value (default to 10 km).
   const currentIndex = Math.max(0, RADIUS_OPTIONS.indexOf(value));
 
   return (
