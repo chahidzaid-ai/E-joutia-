@@ -54,7 +54,7 @@ Expo (avec le QR code à scanner depuis Expo Go).
 ```bash
 cd backend
 python -m venv .venv
-source .venv/bin/activate          # Windows : .venv\Scripts\activate
+#MacOS : source .venv/bin/activate          # Windows : .venv\Scripts\activate
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py loaddata sample_listings   # données d'exemple (optionnel)
@@ -179,7 +179,4 @@ python manage.py test listings
 Couvre le calcul Haversine ainsi que le filtrage par rayon et la validation
 des paramètres de l'endpoint.
 
-## Documentation détaillée
 
-- Backend : [`backend/README.md`](backend/README.md)
-- Frontend : [`frontend/README.md`](frontend/README.md)
