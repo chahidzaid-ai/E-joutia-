@@ -13,7 +13,7 @@ import axios from "axios";
 // Default points to this PC's LAN IP so a physical phone on the same Wi-Fi
 // (via Expo Go) can reach the Django backend. Override with EXPO_PUBLIC_API_URL.
 export const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL || "http://192.168.11.106:8000";
+  process.env.EXPO_PUBLIC_API_URL || "http://192.168.100.52:8000";
 
 const client = axios.create({
   baseURL: API_BASE_URL,

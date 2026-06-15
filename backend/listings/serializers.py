@@ -29,9 +29,11 @@ class ListingSerializer(serializers.ModelSerializer):
         ]
 
     def get_image(self, obj):
-        """Return an absolute URL for the image, or None when absent."""
+        """Return an image URL for uploads or externally hosted sample images."""
         if not obj.image:
             return None
+        if obj.image.name.startswith(("http://", "https://")):
+            return obj.image.name
         request = self.context.get("request")
         url = obj.image.url
         return request.build_absolute_uri(url) if request else url
