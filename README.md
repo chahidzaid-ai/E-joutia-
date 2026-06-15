@@ -179,7 +179,4 @@ python manage.py test listings
 Couvre le calcul Haversine ainsi que le filtrage par rayon et la validation
 des paramètres de l'endpoint.
 
-## Documentation détaillée
 
-- Backend : [`backend/README.md`](backend/README.md)
-- Frontend : [`frontend/README.md`](frontend/README.md)
